@@ -6,7 +6,7 @@ Start the server with `npm run serve` to watch the directory for changes while d
 
 ## .env file
 
-```env
+```
 session=### A valid session from the the advent of code site. https://adventofcode.com
 token=### A token obtained from the slack developer page. https://api.slack.com/
 channelId=### The channel-id you want to post messages to.
