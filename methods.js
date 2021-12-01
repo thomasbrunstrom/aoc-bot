@@ -2,7 +2,7 @@ const axios = require("axios").default;
 
 let cache = { time: 0, data: null };
 let channelTopic =
-  "AoC 2021: https://adventofcode.com | tretton37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: 641193-05404f1a https://app.happeo.com/channels/122683394/ActivitiesKnowledge/discussion/77542093 | ";
+  "AoC 2021: https://adventofcode.com | tretton37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: 641193-05404f1a https://app.happeo.com/channels/122683394/ActivitiesKnowledge/discussion/77542093";
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
@@ -66,7 +66,7 @@ const sendGoodMorning = async () => {
 
 const updateTopic = async () => {
   await buildCache();
-  const topic = channelTopic + `⭐- count: ${cache?.stars}`;
+  const topic = `⭐=${cache?.stars} | ${channelTopic}`;
   const topicChange = {
     channel: process.env.channelId,
     topic,
