@@ -16,7 +16,7 @@ cron.schedule("55 5 * * *", async () => {
   await sendGoodMorning();
 });
 
-cron.schedule("1 * * * *", async () => {
+cron.schedule("0 * * * *", async () => {
   await updateTopic();
 });
 
