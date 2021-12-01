@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.post("/", async (req, res) => {
-  if (cache.time < Date.now() + 900 || cache.data == null) {
+  if (cache.time < Date.now() || cache.data == null) {
     const fe = await axios.get("https://adventofcode.com/2021/leaderboard/private/view/641193.json", {
       headers: {
         Accept: "application/json",
@@ -24,7 +24,7 @@ app.post("/", async (req, res) => {
     const stars = Object.values(json.members).reduce((sum, {stars}) => sum + stars, 0);
     cache.data = json;
     cache.stars = stars;
-    cache.time = Date.now() + 15 * 60 * 1000;
+    cache.time = Date.now() + 900000;
   }
   if (req?.body.text) {
     console.log(text);
