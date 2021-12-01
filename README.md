@@ -2,8 +2,11 @@
 
 A bot for advent of code for 13|37
 
-## Session
+Start the server with `npm run serve` to watch the directory for changes while developing.
 
-You'll need a valid session from the website to run the server locally.  
-Add it to a `.env` file with `session=###` on the first line.  
-After that, start the server with `npm run serve` to watch the directory.
+## .env file
+
+session=### A valid session from the the advent of code site. https://adventofcode.com
+token=### A token obtained from the slack developer page. https://api.slack.com/
+channelId=### The channel-id you want to post messages to.
+isDev=true/false if we're on dev (I cache to not be rate limited)
