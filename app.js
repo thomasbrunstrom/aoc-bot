@@ -75,9 +75,9 @@ const sendGoodMorning = async () => {
   await updateTopic();
   return send;
 };
+
 const updateTopic = async () => {
   const topic = channelTopic + `🌟- count: ${cache?.stars}`;
-  console.log(topic);
   const topicChange = {
     channel: process.env.channelId,
     topic,
