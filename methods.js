@@ -42,7 +42,7 @@ const sendGoodMorning = async () => {
     text += `⭐ ahead of goal: ${cache?.stars}\n`;
     text += `that is about ${Math.round((cache?.stars / 3000) * 10000) / 100} percent so far`;
   } else {
-    text += `⭐ behind of goal: ${3000 - cache?.stars}, let's gooooo! 🙌🥳`;
+    text += `⭐ needed to reach our goal of 3000: ${3000 - cache?.stars}, let's gooooo! 🙌🥳`;
   }
   text += `\nTodays challenge can be found here: https://adventofcode.com/2021/day/${new Date(Date.now()).getDate()}`;
 
@@ -63,18 +63,31 @@ const sendGoodMorning = async () => {
 const updateTopic = async (newTopic) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
-  const topic = `⭐=${cache?.stars} | ${channelTopic}`;
-  const topicChange = {
-    channel: process.env.channelId,
-    topic,
-  };
-
-  const send2 = await axios.post("https://slack.com/api/conversations.setTopic", topicChange, {
+  const currentTopic = await axios.get(`https://slack.com/api/conversations.info?channel=${process.env.channelId}`, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       Authorization: `Bearer ${process.env.token}`,
     },
   });
+
+  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/\:star\:=([0-9]{0,4})\s{1}\|/m);
+
+  if (topicStarsMatch && topicStarsMatch.length) {
+    const topicStars = parseInt(topicStarsMatch[1]);
+    if (topicStars != cache?.stars) {
+      const topic = `⭐=${cache?.stars} | ${channelTopic}`;
+      const topicChange = {
+        channel: process.env.channelId,
+        topic,
+      };
+      await axios.post("https://slack.com/api/conversations.setTopic", topicChange, {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${process.env.token}`,
+        },
+      });
+    }
+  }
 };
 
 module.exports = {
