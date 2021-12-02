@@ -8,8 +8,8 @@ let channelTopic =
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
     await fetchStars();
-    return cache;
   }
+  return cache;
 };
 
 const getStars = async () => {
@@ -29,11 +29,29 @@ const fetchStars = async () => {
     });
 
     const json = fe.data;
-    const stars = Object.values(json.members).reduce((sum, { stars }) => sum + stars, 0);
-    cache.data = json;
-    cache.stars = stars;
-    cache.time = Date.now() + 900000;
+    rebuildCache(json);
   }
+};
+
+const rebuildCache = (json) => {
+  json = json || cache.data;
+
+  const members = Object.values(json.members);
+  const active_members = members.filter((m) => m.stars > 0);
+  const stars = members.reduce((sum, { stars }) => sum + stars, 0);
+  const stars_per_active_member = stars / active_members.length;
+  const stars_per_day = stars / new Date().getDate();
+
+  cache.data = json;
+  cache.members = members.length;
+  cache.active_members = active_members.length;
+  cache.stars = stars;
+  cache.time = Date.now() + 900000;
+  cache.stars_per_active_member = stars_per_active_member.toFixed(2);
+  cache.stars_per_day = stars_per_day.toFixed(2);
+  cache.trajectory = (25 * stars_per_day).toFixed(0);
+  cache.percent_done = ((stars / GOAL) * 100).toFixed(2);
+  return cache;
 };
 
 const sendGoodMorning = async () => {
@@ -41,9 +59,10 @@ const sendGoodMorning = async () => {
   let text = `Good morning coders... This is the current stats!!!\n\nCurrent number of ⭐: ${cache?.stars}\n\n`;
   if (cache?.stars > GOAL) {
     text += `⭐ ahead of goal: ${cache?.stars}\n`;
-    text += `that is about ${Math.round((cache?.stars / GOAL) * 10000) / 100} percent so far`;
+    text += `that is about ${cache?.percent_done} percent so far\n`;
   } else {
     text += `⭐ needed to reach our goal of ${GOAL}: ${GOAL - cache?.stars}, let's gooooo! 🙌🥳`;
+    text += `if we keep up at current pace with ${cache?.active_members} coders we'll end up with ${cache?.trajectory} stars by 25th December`;
   }
   text += `\nTodays challenge can be found here: https://adventofcode.com/2021/day/${new Date(Date.now()).getDate()}`;
 
@@ -97,4 +116,5 @@ module.exports = {
   buildCache,
   updateTopic,
   getStars,
+  rebuildCache,
 };
