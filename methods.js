@@ -39,15 +39,17 @@ const rebuildCache = (json) => {
   const members = Object.values(json.members);
   const active_members = members.filter((m) => m.stars > 0);
   const stars = members.reduce((sum, { stars }) => sum + stars, 0);
-  const average_stars = stars / active_members.length;
+  const stars_per_active_member = stars / active_members.length;
+  const stars_per_day = stars / new Date().getDate();
 
   cache.data = json;
   cache.members = members.length;
   cache.active_members = active_members.length;
   cache.stars = stars;
   cache.time = Date.now() + 900000;
-  cache.average_stars = average_stars.toFixed(2);
-  cache.trajectory = ((25 * stars) / new Date().getDate()).toFixed(0);
+  cache.stars_per_active_member = stars_per_active_member.toFixed(2);
+  cache.stars_per_day = stars_per_day.toFixed(2);
+  cache.trajectory = (25 * stars_per_day).toFixed(0);
   cache.percent_done = ((stars / GOAL) * 100).toFixed(2);
   return cache;
 };
