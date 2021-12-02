@@ -1,4 +1,5 @@
 const axios = require("axios").default;
+const GOAL = 3000;
 
 let cache = { time: 0, data: null, stars: 0 };
 let channelTopic =
@@ -38,11 +39,11 @@ const fetchStars = async () => {
 const sendGoodMorning = async () => {
   await buildCache();
   let text = `Good morning coders... This is the current stats!!!\n\nCurrent number of ⭐: ${cache?.stars}\n\n`;
-  if (cache?.stars > 3000) {
+  if (cache?.stars > GOAL) {
     text += `⭐ ahead of goal: ${cache?.stars}\n`;
-    text += `that is about ${Math.round((cache?.stars / 3000) * 10000) / 100} percent so far`;
+    text += `that is about ${Math.round((cache?.stars / GOAL) * 10000) / 100} percent so far`;
   } else {
-    text += `⭐ needed to reach our goal of 3000: ${3000 - cache?.stars}, let's gooooo! 🙌🥳`;
+    text += `⭐ needed to reach our goal of ${GOAL}: ${GOAL - cache?.stars}, let's gooooo! 🙌🥳`;
   }
   text += `\nTodays challenge can be found here: https://adventofcode.com/2021/day/${new Date(Date.now()).getDate()}`;
 
