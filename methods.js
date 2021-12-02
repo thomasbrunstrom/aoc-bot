@@ -59,9 +59,9 @@ const sendGoodMorning = async () => {
   let text = `Good morning coders... This is the current stats!!!\n\nCurrent number of ⭐: ${cache?.stars}\n\n`;
   if (cache?.stars > GOAL) {
     text += `⭐ ahead of goal: ${cache?.stars}\n`;
-    text += `that is about ${cache?.percent_done} percent so far\n`;
+    text += `that is about ${cache?.percent_done} percent so far`;
   } else {
-    text += `⭐ needed to reach our goal of ${GOAL}: ${GOAL - cache?.stars}, let's gooooo! 🙌🥳`;
+    text += `⭐ needed to reach our goal of ${GOAL}: ${GOAL - cache?.stars}, let's gooooo! 🙌🥳\n`;
     text += `if we keep up at current pace with ${cache?.active_members} coders we'll end up with ${cache?.trajectory} stars by 25th December`;
   }
   text += `\nTodays challenge can be found here: https://adventofcode.com/2021/day/${new Date(Date.now()).getDate()}`;
