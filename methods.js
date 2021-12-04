@@ -1,6 +1,19 @@
 const axios = require("axios").default;
 const GOAL = 3000;
 
+const LEADERBOARD_URL = "https://adventofcode.com/2021/leaderboard/private/view/641193.json";
+const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
+const CHANNEL_INFO_URL = `https://slack.com/api/conversations.info?channel=${process.env.channelId}`;
+const SET_TOPIC_URL = "https://slack.com/api/conversations.setTopic";
+const CHANNEL_HISTORY_URL = `https://slack.com/api/conversations.history?channel=${process.env.channelId}`;
+const DELETE_MESSAGE_URL = (timeStamp) =>
+  `https://slack.com/api/chat.delete?channel=${process.env.channelId}&ts=${timeStamp}`;
+
+const headers = {
+  "Content-Type": "application/json; charset=utf-8",
+  Authorization: `Bearer ${process.env.token}`,
+};
+
 let cache = { time: 0, data: null, stars: 0 };
 let channelTopic =
   "AoC 2021: https://adventofcode.com | tretton37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: 641193-05404f1a https://app.happeo.com/channels/122683394/ActivitiesKnowledge/discussion/77542093";
@@ -19,7 +32,7 @@ const getStars = async () => {
 
 const fetchStars = async () => {
   if (!cache.data || cache?.time < Date.now()) {
-    const fe = await axios.get("https://adventofcode.com/2021/leaderboard/private/view/641193.json", {
+    const fe = await axios.get(LEADERBOARD_URL, {
       headers: {
         Accept: "application/json",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
@@ -71,24 +84,14 @@ const sendGoodMorning = async () => {
     text,
   };
 
-  const send = await axios.post("https://slack.com/api/chat.postMessage", msg, {
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      Authorization: `Bearer ${process.env.token}`,
-    },
-  });
+  const send = await axios.post(POST_MESSAGE_URL, msg, { headers });
   return send;
 };
 
 const updateTopic = async (newTopic) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
-  const currentTopic = await axios.get(`https://slack.com/api/conversations.info?channel=${process.env.channelId}`, {
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      Authorization: `Bearer ${process.env.token}`,
-    },
-  });
+  const currentTopic = await axios.get(CHANNEL_INFO_URL, { headers });
 
   const topicStarsMatch = currentTopic.data.channel.topic.value.match(/\:star\:=([0-9]{0,4})\s{1}\|/m);
 
@@ -100,12 +103,7 @@ const updateTopic = async (newTopic) => {
         channel: process.env.channelId,
         topic,
       };
-      await axios.post("https://slack.com/api/conversations.setTopic", topicChange, {
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          Authorization: `Bearer ${process.env.token}`,
-        },
-      });
+      await axios.post(SET_TOPIC_URL, topicChange, { headers });
     }
   }
 };
