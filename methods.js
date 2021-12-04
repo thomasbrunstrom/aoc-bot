@@ -6,8 +6,7 @@ const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
 const CHANNEL_INFO_URL = `https://slack.com/api/conversations.info?channel=${process.env.channelId}`;
 const SET_TOPIC_URL = "https://slack.com/api/conversations.setTopic";
 const CHANNEL_HISTORY_URL = `https://slack.com/api/conversations.history?channel=${process.env.channelId}`;
-const DELETE_MESSAGE_URL = (timeStamp) =>
-  `https://slack.com/api/chat.delete?channel=${process.env.channelId}&ts=${timeStamp}`;
+const DELETE_MESSAGE_URL = "https://slack.com/api/chat.delete";
 
 const headers = {
   "Content-Type": "application/json; charset=utf-8",
@@ -104,7 +103,24 @@ const updateTopic = async (newTopic) => {
         topic,
       };
       await axios.post(SET_TOPIC_URL, topicChange, { headers });
+
+      await deleteLatestTopicUpdate();
     }
+  }
+};
+
+const deleteLatestTopicUpdate = async () => {
+  const res = await axios.get(CHANNEL_HISTORY_URL, { headers });
+
+  if (res.data.ok) {
+    const messageToDelete = res.data.messages.find((mes) => mes.subtype === "channel_topic");
+
+    const payload = {
+      channel: process.env.channelId,
+      ts: messageToDelete?.ts
+    }
+
+    await axios.post(DELETE_MESSAGE_URL, payload, { headers });
   }
 };
 
