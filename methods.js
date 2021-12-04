@@ -40,7 +40,7 @@ const rebuildCache = (json) => {
   const active_members = members.filter((m) => m.stars > 0);
   const stars = members.reduce((sum, { stars }) => sum + stars, 0);
   const stars_per_active_member = stars / active_members.length;
-  const stars_per_day = stars / new Date().getDate();
+  const stars_per_day = stars / (new Date().getDate() - 1); // -1 as good morning message happens as new day is active
 
   cache.data = json;
   cache.members = members.length;
