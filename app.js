@@ -16,8 +16,6 @@ cron.schedule("55 5 * * *", async () => {
   await sendGoodMorning();
 });
 
-sendGoodMorning();
-updateTopic();
 cron.schedule("0 8,12,18 * * *", async () => {
   await updateTopic();
 });
