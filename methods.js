@@ -1,5 +1,5 @@
 const { get, post } = require("axios");
-const GOAL = 3000;
+const GOAL = 1477;
 
 const LEADERBOARD_URL = "https://adventofcode.com/2022/leaderboard/private/view/641193.json";
 const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
