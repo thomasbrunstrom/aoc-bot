@@ -16,4 +16,5 @@ token=### A token obtained from the slack developer page. https://api.slack.com/
 channelId=### The channel-id you want to post messages to.
 isDev=true/false if we're on dev (I cache to not be rate limited)
 privateLeaderboardCode=### Private leaderboard code
+sponsorJoinCode=### Sponsor join code
 ```
