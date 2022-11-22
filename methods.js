@@ -13,9 +13,10 @@ const headers = {
   Authorization: `Bearer ${process.env.token}`,
 };
 
+const privateLeaderboardCode = process.env.privateLeaderboardCode;
 let cache = { time: 0, data: null, stars: 0 };
 let channelTopic =
-  ":snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: 641193-05404f1a :snowflake: more info coming!";
+  `:snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: more info coming!`;
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
