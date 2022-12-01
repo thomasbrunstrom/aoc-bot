@@ -16,8 +16,7 @@ const headers = {
 const privateLeaderboardCode = process.env.privateLeaderboardCode;
 const sponsorJoinCode = process.env.sponsorJoinCode;
 let cache = { time: 0, data: null, stars: 0 };
-let channelTopic =
-  `:star:=0 | :snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/3h | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
+let channelTopic = `:snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/3h | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
@@ -95,7 +94,7 @@ const sendGoodMorning = async () => {
     channel: process.env.channelId,
     thread_ts: send.data.ts,
     text: `*What was your thoughts on day ${day}?*`,
-  }
+  };
 
   await post(POST_MESSAGE_URL, threadMsg, { headers });
   return send;
@@ -105,19 +104,18 @@ const updateTopic = async (newTopic) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
   const currentTopic = await get(CHANNEL_INFO_URL, { headers });
-
   const topicStarsMatch = currentTopic.data.channel.topic.value.match(/\:star\:=([0-9]{0,4})\s{1}\|/m);
 
   if (topicStarsMatch && topicStarsMatch.length) {
     const topicStars = parseInt(topicStarsMatch[1]);
     if (topicStars !== cache?.stars) {
-      const topic = `⭐=${cache?.stars} | ${channelTopic}`;
+      const topic = `:star:=${cache?.stars} | ${channelTopic}`;
       const topicChange = {
         channel: process.env.channelId,
         topic,
       };
-      await post(SET_TOPIC_URL, topicChange, { headers });
 
+      await post(SET_TOPIC_URL, topicChange, { headers });
       await deleteLatestTopicUpdate();
     }
   }
@@ -131,8 +129,8 @@ const deleteLatestTopicUpdate = async () => {
 
     const payload = {
       channel: process.env.channelId,
-      ts: messageToDelete?.ts
-    }
+      ts: messageToDelete?.ts,
+    };
 
     await post(DELETE_MESSAGE_URL, payload, { headers });
   }
