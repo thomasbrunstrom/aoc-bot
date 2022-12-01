@@ -17,7 +17,7 @@ const privateLeaderboardCode = process.env.privateLeaderboardCode;
 const sponsorJoinCode = process.env.sponsorJoinCode;
 let cache = { time: 0, data: null, stars: 0 };
 let channelTopic =
-  `:star:=0 | :snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/15 | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
+  `:star:=0 | :snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/3h | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
