@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 import express from "express";
 import cron from "node-cron";
 import { sendGoodMorning, updateTopic } from "./methods";
+import routes from "./routes";
 
 dotenv.config();
 const app = express();
-const PORT = 5505;
-const routes = require("./routes");
+const PORT = process.env.PORT || 5505;
 
 app.use(cors());
 app.use(express.json());

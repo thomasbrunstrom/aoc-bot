@@ -55,7 +55,7 @@ const headers = {
 
 const privateLeaderboardCode = process.env.privateLeaderboardCode;
 const sponsorJoinCode = process.env.sponsorJoinCode;
-let cache: ICache = { time: 0, data: null, stars: 0 };
+const cache: ICache = { time: 0, data: null, stars: 0 };
 let channelTopic = `:snowflake: AoC 2023: https://adventofcode.com :snowflake: tretton37 leaderboard: coming soon | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
 
 const buildCache = async () => {
@@ -65,12 +65,12 @@ const buildCache = async () => {
   return cache;
 };
 
-const getStars = async () => {
+export const getStars = async () => {
   await buildCache();
   return cache.stars;
 };
 
-const fetchStars = async () => {
+export const fetchStars = async () => {
   if (!cache.data || cache?.time < Date.now()) {
     const fe = await axios.get<ILeaderBoard>(LEADERBOARD_URL, {
       headers: {
@@ -86,7 +86,7 @@ const fetchStars = async () => {
   }
 };
 
-const rebuildCache = (json: ILeaderBoard) => {
+export const rebuildCache = (json: ILeaderBoard) => {
   json = json || cache.data;
 
   const members = Object.values(json.members);
@@ -144,7 +144,7 @@ export const updateTopic = async (newTopic = undefined) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
   const currentTopic = await axios.get(CHANNEL_INFO_URL, { headers });
-  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/\:star\:=([0-9]{0,4})\s{1}\|/m);
+  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/:star:=([0-9]{0,4})\s{1}\|/m);
 
   if (topicStarsMatch && topicStarsMatch.length) {
     const topicStars = parseInt(topicStarsMatch[1]);
@@ -174,13 +174,4 @@ const deleteLatestTopicUpdate = async () => {
 
     await axios.post(DELETE_MESSAGE_URL, payload, { headers });
   }
-};
-
-module.exports = {
-  sendGoodMorning,
-  fetchStars,
-  buildCache,
-  updateTopic,
-  getStars,
-  rebuildCache,
 };

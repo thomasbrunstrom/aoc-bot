@@ -1,7 +1,11 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
+import { getStars, sendGoodMorning, updateTopic } from "./methods";
 
-const routes = require("express").Router();
-const { updateTopic, sendGoodMorning, getStars } = require("./methods");
+const routes = express.Router();
+
+routes.get("/", async (req: Request, res: Response) => {
+  res.send(`Please, sir, I want some more ginger bread.`).end();
+});
 
 routes.post("/", async (req: Request, res: Response) => {
   const stars = await getStars();
@@ -25,4 +29,4 @@ routes.put("/topic", async (req: Request, res: Response) => {
   }
 });
 
-module.exports = routes;
+export default routes;
