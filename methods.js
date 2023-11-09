@@ -1,7 +1,7 @@
 const { get, post } = require("axios");
 const GOAL = 1477;
 
-const LEADERBOARD_URL = "https://adventofcode.com/2022/leaderboard/private/view/641193.json";
+const LEADERBOARD_URL = "https://adventofcode.com/2023/leaderboard/private/view/641193.json";
 const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
 const CHANNEL_INFO_URL = `https://slack.com/api/conversations.info?channel=${process.env.channelId}`;
 const SET_TOPIC_URL = "https://slack.com/api/conversations.setTopic";
@@ -16,7 +16,7 @@ const headers = {
 const privateLeaderboardCode = process.env.privateLeaderboardCode;
 const sponsorJoinCode = process.env.sponsorJoinCode;
 let cache = { time: 0, data: null, stars: 0 };
-let channelTopic = `:snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/3h | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
+let channelTopic = `:snowflake: AoC 2023: https://adventofcode.com :snowflake: tretton37 leaderboard: coming soon | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
