@@ -1,7 +1,9 @@
+import { Request, Response } from "express";
+
 const routes = require("express").Router();
 const { updateTopic, sendGoodMorning, getStars } = require("./methods");
 
-routes.post("/", async (req, res) => {
+routes.post("/", async (req: Request, res: Response) => {
   const stars = await getStars();
   res.json({
     response_type: "in_channel",
@@ -9,12 +11,12 @@ routes.post("/", async (req, res) => {
   });
 });
 
-routes.get("/goodmorning", async (req, res) => {
+routes.get("/goodmorning", async (req: Request, res: Response) => {
   await sendGoodMorning();
   res.json("ok");
 });
 
-routes.put("/topic", async (req, res) => {
+routes.put("/topic", async (req: Request, res: Response) => {
   if (req.body?.topic) {
     updateTopic(req.body?.topic);
     res.json("ok");
