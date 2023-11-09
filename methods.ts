@@ -1,7 +1,47 @@
-const { get, post } = require("axios");
+import axios from "axios";
 const GOAL = 1477;
 
-const LEADERBOARD_URL = "https://adventofcode.com/2022/leaderboard/private/view/641193.json";
+interface CompletionDayLevel {}
+interface IMemberInfo {
+  id: number;
+  local_score: number;
+  name: string;
+  global_score: number;
+  last_star_ts: number;
+  completion_day_level: CompletionDayLevel;
+  stars: number;
+}
+
+interface ILeaderBoard {
+  owner_id: number;
+  event: string;
+  members: Record<string, IMemberInfo>;
+}
+
+interface ICache {
+  time: number;
+  data: ILeaderBoard | null;
+  stars: number;
+  members?: number;
+  active_members?: number;
+  stars_per_active_member?: string;
+  stars_per_day?: string;
+  trajectory?: string;
+  percent_done?: string;
+}
+
+interface SlackMessage {
+  type: string;
+  subtype?: string;
+  ts: string;
+}
+
+interface ISlackResponse {
+  ok: boolean;
+  messages: SlackMessage[];
+}
+
+const LEADERBOARD_URL = "https://adventofcode.com/2023/leaderboard/private/view/641193.json";
 const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
 const CHANNEL_INFO_URL = `https://slack.com/api/conversations.info?channel=${process.env.channelId}`;
 const SET_TOPIC_URL = "https://slack.com/api/conversations.setTopic";
@@ -15,8 +55,8 @@ const headers = {
 
 const privateLeaderboardCode = process.env.privateLeaderboardCode;
 const sponsorJoinCode = process.env.sponsorJoinCode;
-let cache = { time: 0, data: null, stars: 0 };
-let channelTopic = `:snowflake: AoC 2022: https://adventofcode.com :snowflake: 13|37 leaderboard: https://1337co.de/3h | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
+const cache: ICache = { time: 0, data: null, stars: 0 };
+let channelTopic = `:snowflake: AoC 2023: https://adventofcode.com :snowflake: tretton37 leaderboard: coming soon | Join our private leaderboard with code: ${privateLeaderboardCode} :snowflake: Sponsor join code ${sponsorJoinCode} (internal use only)!:shushing_face:`;
 
 const buildCache = async () => {
   if (!cache.data || cache?.time < Date.now()) {
@@ -25,14 +65,14 @@ const buildCache = async () => {
   return cache;
 };
 
-const getStars = async () => {
+export const getStars = async () => {
   await buildCache();
-  return await cache.stars;
+  return cache.stars;
 };
 
-const fetchStars = async () => {
+export const fetchStars = async () => {
   if (!cache.data || cache?.time < Date.now()) {
-    const fe = await get(LEADERBOARD_URL, {
+    const fe = await axios.get<ILeaderBoard>(LEADERBOARD_URL, {
       headers: {
         Accept: "application/json",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
@@ -46,7 +86,7 @@ const fetchStars = async () => {
   }
 };
 
-const rebuildCache = (json) => {
+export const rebuildCache = (json: ILeaderBoard) => {
   json = json || cache.data;
 
   const members = Object.values(json.members);
@@ -67,7 +107,7 @@ const rebuildCache = (json) => {
   return cache;
 };
 
-const sendGoodMorning = async () => {
+export const sendGoodMorning = async () => {
   await buildCache();
   const day = new Date(Date.now()).getDate();
   let text = `*Good morning coders!* \n\n*Current number of ⭐: ${cache?.stars}*\n\n`;
@@ -87,7 +127,7 @@ const sendGoodMorning = async () => {
     text,
   };
 
-  const send = await post(POST_MESSAGE_URL, msg, { headers });
+  const send = await axios.post(POST_MESSAGE_URL, msg, { headers });
 
   // Add a message to start a discussion thread about today's puzzle
   const threadMsg = {
@@ -96,15 +136,15 @@ const sendGoodMorning = async () => {
     text: `*What was your thoughts on day ${day}?*`,
   };
 
-  await post(POST_MESSAGE_URL, threadMsg, { headers });
+  await axios.post(POST_MESSAGE_URL, threadMsg, { headers });
   return send;
 };
 
-const updateTopic = async (newTopic) => {
+export const updateTopic = async (newTopic = undefined) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
-  const currentTopic = await get(CHANNEL_INFO_URL, { headers });
-  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/\:star\:=([0-9]{0,4})\s{1}\|/m);
+  const currentTopic = await axios.get(CHANNEL_INFO_URL, { headers });
+  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/:star:=([0-9]{0,4})\s{1}\|/m);
 
   if (topicStarsMatch && topicStarsMatch.length) {
     const topicStars = parseInt(topicStarsMatch[1]);
@@ -115,14 +155,14 @@ const updateTopic = async (newTopic) => {
         topic,
       };
 
-      await post(SET_TOPIC_URL, topicChange, { headers });
+      await axios.post(SET_TOPIC_URL, topicChange, { headers });
       await deleteLatestTopicUpdate();
     }
   }
 };
 
 const deleteLatestTopicUpdate = async () => {
-  const res = await get(CHANNEL_HISTORY_URL, { headers });
+  const res = await axios.get<ISlackResponse>(CHANNEL_HISTORY_URL, { headers });
 
   if (res.data.ok) {
     const messageToDelete = res.data.messages.find((mes) => mes.subtype === "channel_topic");
@@ -132,15 +172,6 @@ const deleteLatestTopicUpdate = async () => {
       ts: messageToDelete?.ts,
     };
 
-    await post(DELETE_MESSAGE_URL, payload, { headers });
+    await axios.post(DELETE_MESSAGE_URL, payload, { headers });
   }
-};
-
-module.exports = {
-  sendGoodMorning,
-  fetchStars,
-  buildCache,
-  updateTopic,
-  getStars,
-  rebuildCache,
 };

@@ -1,13 +1,15 @@
 # aoc-bot
 
-A bot for advent of code for 13|37
+A bot for advent of code for tretton37
 
-Start the server with `npm run serve` to watch the directory for changes while developing.
+Start the server with `npm run dev` to watch the directory for changes while developing.
 
 ## Start with PM2
+
 ```bash
-pm2 start app.js --name aocbot 
+pm2 start dist/app.js --name aocbot
 ```
+
 ## .env file
 
 ```
