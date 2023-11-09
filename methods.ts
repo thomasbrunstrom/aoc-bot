@@ -41,6 +41,22 @@ interface ISlackResponse {
   messages: SlackMessage[];
 }
 
+export interface ISlackTopic {
+  ok: boolean;
+  channel: Channel;
+}
+export interface Channel {
+  id: string;
+  name: string;
+  topic: Purpose;
+}
+
+export interface Purpose {
+  value: string;
+  creator: string;
+  last_set: number;
+}
+
 const LEADERBOARD_URL = "https://adventofcode.com/2023/leaderboard/private/view/641193.json";
 const POST_MESSAGE_URL = "https://slack.com/api/chat.postMessage";
 const CHANNEL_INFO_URL = `https://slack.com/api/conversations.info?channel=${process.env.channelId}`;
@@ -143,8 +159,8 @@ export const sendGoodMorning = async () => {
 export const updateTopic = async (newTopic = undefined) => {
   channelTopic = newTopic || channelTopic;
   await buildCache();
-  const currentTopic = await axios.get(CHANNEL_INFO_URL, { headers });
-  const topicStarsMatch = currentTopic.data.channel.topic.value.match(/:star:=([0-9]{0,4})\s{1}\|/m);
+  const currentTopic = await axios.get<ISlackTopic>(CHANNEL_INFO_URL, { headers });
+  const topicStarsMatch = currentTopic.data?.channel?.topic?.value?.match(/:star:=([0-9]{0,4})\s{1}\|/m);
 
   if (topicStarsMatch && topicStarsMatch.length) {
     const topicStars = parseInt(topicStarsMatch[1]);
