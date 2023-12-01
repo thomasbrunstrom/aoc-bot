@@ -64,9 +64,11 @@ const SET_TOPIC_URL = "https://slack.com/api/conversations.setTopic";
 const CHANNEL_HISTORY_URL = `https://slack.com/api/conversations.history?channel=${process.env.channelId}`;
 const DELETE_MESSAGE_URL = "https://slack.com/api/chat.delete";
 
-const headers = {
-  "Content-Type": "application/json; charset=utf-8",
-  Authorization: `Bearer ${process.env.token}`,
+const getHeaders = () => {
+  return {
+    "Content-Type": "application/json; charset=utf-8",
+    Authorization: `Bearer ${process.env.token}`,
+  };
 };
 
 const privateLeaderboardCode = process.env.privateLeaderboardCode;
@@ -142,9 +144,8 @@ export const sendGoodMorning = async () => {
     channel: process.env.channelId,
     text,
   };
-
+  const headers = getHeaders();
   const send = await axios.post(POST_MESSAGE_URL, msg, { headers });
-
   // Add a message to start a discussion thread about today's puzzle
   const threadMsg = {
     channel: process.env.channelId,
@@ -157,6 +158,7 @@ export const sendGoodMorning = async () => {
 };
 
 export const updateTopic = async (newTopic = undefined) => {
+  const headers = getHeaders();
   channelTopic = newTopic || channelTopic;
   await buildCache();
   const currentTopic = await axios.get<ISlackTopic>(CHANNEL_INFO_URL, { headers });
@@ -178,6 +180,7 @@ export const updateTopic = async (newTopic = undefined) => {
 };
 
 const deleteLatestTopicUpdate = async () => {
+  const headers = getHeaders();
   const res = await axios.get<ISlackResponse>(CHANNEL_HISTORY_URL, { headers });
 
   if (res.data.ok) {
