@@ -111,7 +111,8 @@ export const rebuildCache = (json: ILeaderBoard) => {
   const active_members = members.filter((m) => m.stars > 0);
   const stars = members.reduce((sum, { stars }) => sum + stars, 0);
   const stars_per_active_member = stars / active_members.length;
-  const stars_per_day = stars / (new Date().getDate() - 1); // -1 as good morning message happens as new day is active
+  const currentDay = new Date().getDate() - 1; // -1 as good morning message happens as new day is active
+  const stars_per_day = stars / (currentDay > 0 ? currentDay : 1); //Make sure we don't divide by 0.. (machine goes burr hurr durr)
 
   cache.data = json;
   cache.members = members.length;
@@ -137,7 +138,7 @@ export const sendGoodMorning = async () => {
     text += `We need _${GOAL - cache?.stars}_ ⭐ to reach our goal of *${GOAL}* so let's gooooo! 🙌🥳\n\n`;
     text += `If we keep up at current pace with ${cache?.active_members} coders we'll end up with ${cache?.trajectory} stars by 25th December`;
   }
-  text += `\n\n<https://adventofcode.com/2022/day/${day}|[Today's puzzle]>`;
+  text += `\n\n<https://adventofcode.com/2023/day/${day}|[Today's puzzle]>`;
   text += `\n\nLet's continue in a thread! 🎄`;
 
   const msg = {
